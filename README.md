@@ -4,8 +4,31 @@ To make this PoC fully self contained the server used for testing is a separate 
 
 In practice this issue manifests itself not only using unix domain sockets but also when listening to a ip address using both internal and external servers.
 
-## Generate key material
-The provided key material for this test has been generated as follows:
+## Running your local plugin
+APISIX containing your custom configuration and plugin are run using the APISIX Docker container. While perfectly possible to use the Docker CLI to run APISIX a Makefile is created for convenience.
+
+The Makefile contains the following commands:
+- dev-startup -> creates and start the docker container with the appropriate volume mounts
+- dev-start -> starts an existing container
+- dev-stop -> stops the container
+- dev-rm -> removes the container
+- dev-reload -> issues the `apisix reload` command inside the container
+
+When the container is started a container with the name of `apache-apisix-standalone-test` is run.
+
+To run the container initially:
+```shell
+make dev-startup
+```
+
+stopping and starting a previously started container:
+```shell
+make dev-stop #stops the container
+make dev-start #starts a previously stopped container
+```
+
+## Generated key material
+The provided key material is located in the `certs` directory and has been generated as follows:
 generate CA private key:
 ```shell
 openssl genrsa -des3 -out myCA.key 2048 #passphrase: test
@@ -69,20 +92,3 @@ conf/config.yaml -> /usr/local/apisix/conf/config.yaml
 conf/apisix.yaml -> /usr/local/apisix/conf/apisix.yaml
 logs/ -> /usr/local/apisix/logs
 src/ -> /usr/local/apisix/custom-plugins
-
-### Running your local plugin
-APISIX containing your custom configuration and plugin are run using the APISIX Docker container. While perfectly possible to use the Docker CLI to run APISIX a Makefile is created for convenience. 
-
-The Makefile contains the following commands:
-- dev-startup -> creates and start the docker container with the appropriate volume mounts
-- dev-start -> starts an existing container
-- dev-stop -> stops the container
-- dev-rm -> removes the container
-- dev-reload -> issues the `apisix reload` command inside the container
-
-When the container is started a container with the name of `apache-apisix-standalone-test` is run. 
-
-To run the container:
-```shell
-make dev-startup
-```

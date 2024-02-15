@@ -1,0 +1,26 @@
+deployment:
+  role: data_plane
+  role_data_plane:
+    config_provider: yaml
+apisix:
+  extra_lua_path: "/usr/local/apisix/custom-plugins/?.lua"
+  extra_lua_cpath: "/usr/local/apisix/custom-plugin-libs/?.so"
+plugins: 
+  - mtls-test
+nginx_config:
+  http_configuration_snippet: |
+    server {
+       listen unix:/usr/local/apisix/internal.sock ssl http2;
+    
+       ssl_certificate        /usr/local/apisix/conf/cert/cert.crt;
+       ssl_certificate_key    /usr/local/apisix/conf/cert/test.server.key;
+       ssl_client_certificate /usr/local/apisix/conf/ca.pem;
+       ssl_verify_client      on;
+       server_tokens          off;
+
+       server_name            test.server;
+
+       location /test {
+          echo -n "hello, \$ssl_client_s_dn";
+       }
+    }
